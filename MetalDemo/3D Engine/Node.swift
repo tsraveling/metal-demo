@@ -17,6 +17,15 @@ class Node {
     var vertexCount: Int
     var vertexBuffer: MTLBuffer
     
+    var positionX: Float = 0.0
+    var positionY: Float = 0.0
+    var positionZ: Float = 0.0
+    
+    var rotationX: Float = 0.0
+    var rotationY: Float = 0.0
+    var rotationZ: Float = 0.0
+    var scale: Float     = 1.0
+    
     init(name: String, vertices: Array<Vertex>, device: MTLDevice){
         
         // Build the data from the vertex argument
@@ -34,8 +43,7 @@ class Node {
         self.device = device
         vertexCount = vertices.count
     }
-    
-    func render(commandQueue: MTLCommandQueue, pipelineState: MTLRenderPipelineState, drawable: CAMetalDrawable, clearColor: MTLClearColor?){
+    func render(commandQueue: MTLCommandQueue, pipelineState: MTLRenderPipelineState, drawable: CAMetalDrawable, parentModelViewMatrix: Matrix4, projectionMatrix: Matrix4, clearColor: MTLClearColor?){
         
         // Build render pass descriptor
         let renderPassDescriptor = MTLRenderPassDescriptor()
@@ -49,14 +57,43 @@ class Node {
         
         // Set up the encoder for this node
         let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
+        renderEncoder.setCullMode(MTLCullMode.front)
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexCount,
-                                     instanceCount: vertexCount/3)
+        
+        // Build transformation matrix
+        let nodeModelMatrix = self.modelMatrix()
+        nodeModelMatrix.multiplyLeft(parentModelViewMatrix)
+        
+        // Build the uniform buffer using the Matrix4 construction
+        let uniformBuffer = device.makeBuffer(length: MemoryLayout<Float>.size * Matrix4.numberOfElements() * 2, options: [])!
+        
+        // Set up the pointer to the buffer
+        let bufferPointer = uniformBuffer.contents()
+        
+        // Copy in world and perspective transforms
+        memcpy(bufferPointer, nodeModelMatrix.raw(), MemoryLayout<Float>.size * Matrix4.numberOfElements())
+        memcpy(bufferPointer + MemoryLayout<Float>.size * Matrix4.numberOfElements(), projectionMatrix.raw(), MemoryLayout<Float>.size * Matrix4.numberOfElements())
+        
+        // Set the vertex buffer
+        renderEncoder.setVertexBuffer(uniformBuffer, offset: 0, index: 1)
+        
+        // Draw the node
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexCount, instanceCount: vertexCount/3)
         renderEncoder.endEncoding()
         
         // Send the render to the buffer
         commandBuffer.present(drawable)
         commandBuffer.commit()
+    }
+    
+    func modelMatrix() -> Matrix4 {
+        
+        // Apply transform using the Matrix4 class
+        let matrix = Matrix4()
+        matrix.translate(positionX, y: positionY, z: positionZ)
+        matrix.rotateAroundX(rotationX, y: rotationY, z: rotationZ)
+        matrix.scale(scale, y: scale, z: scale)
+        return matrix
     }
 }

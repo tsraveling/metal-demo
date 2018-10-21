@@ -16,20 +16,33 @@ struct VertexIn {
 };
 
 struct VertexOut {
-    float4 position [[position]];  //1
+    float4 position [[position]];
     float4 color;
 };
 
+struct Uniforms {
+    float4x4 modelMatrix;
+    float4x4 projectionMatrix;
+};
+
 // This is our basic vertex shader -- it just returns the positions of the vertices.
-vertex VertexOut basic_vertex(const device VertexIn* vertexArray [[ buffer(0) ]],
-                           unsigned int vid [[ vertex_id ]]) {
+vertex VertexOut basic_vertex(const device VertexIn* vertex_array [[ buffer(0) ]],
+                              const device Uniforms&  uniforms    [[ buffer(1) ]],
+                              unsigned int vid [[ vertex_id ]]) {
+    
+    // Pull the matrix
+    float4x4 modelMatrix = uniforms.modelMatrix;
+    float4x4 projectionMatrix = uniforms.projectionMatrix;
     
     // Get the specific vertex out of the buffer
-    VertexIn vertexIn = vertexArray[vid];
+    VertexIn vertexIn = vertex_array[vid];
     
     // Build the vertex out structure using the position and color passed in
     VertexOut vertexOut;
-    vertexOut.position = float4(vertexIn.position,1);
+    
+    // Multiply in the projection matrix and the model transform matrix. Note that because this is basically a vector,
+    // order of multiplication makes a big difference.
+    vertexOut.position = projectionMatrix * modelMatrix * float4(vertexIn.position,1);
     vertexOut.color = vertexIn.color;
     
     // Return the result

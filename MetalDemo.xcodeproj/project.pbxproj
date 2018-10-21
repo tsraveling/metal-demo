@@ -16,6 +16,8 @@
 		03A6910F217A8480000F476A /* Vertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A6910E217A8480000F476A /* Vertex.swift */; };
 		03A69115217D0B21000F476A /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A69114217D0B21000F476A /* Node.swift */; };
 		03A69117217D1451000F476A /* Triangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A69116217D1451000F476A /* Triangle.swift */; };
+		03A6911A217D1B5D000F476A /* Cube.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A69119217D1B5D000F476A /* Cube.swift */; };
+		03A69120217D1DB3000F476A /* Matrix4.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A6911F217D1DB3000F476A /* Matrix4.m */; settings = {COMPILER_FLAGS = "-ObjC"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,10 @@
 		03A6910E217A8480000F476A /* Vertex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vertex.swift; sourceTree = "<group>"; };
 		03A69114217D0B21000F476A /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		03A69116217D1451000F476A /* Triangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Triangle.swift; sourceTree = "<group>"; };
+		03A69119217D1B5D000F476A /* Cube.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cube.swift; sourceTree = "<group>"; };
+		03A6911D217D1DB2000F476A /* MetalDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MetalDemo-Bridging-Header.h"; sourceTree = "<group>"; };
+		03A6911E217D1DB3000F476A /* Matrix4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix4.h; sourceTree = "<group>"; };
+		03A6911F217D1DB3000F476A /* Matrix4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Matrix4.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,8 +68,8 @@
 		03A690F7217A7664000F476A /* MetalDemo */ = {
 			isa = PBXGroup;
 			children = (
+				03A6911B217D1D92000F476A /* Util */,
 				03A6910D217A8404000F476A /* 3D Engine */,
-				03A6910A217A7A76000F476A /* Shaders */,
 				03A690F8217A7664000F476A /* AppDelegate.swift */,
 				03A690FA217A7664000F476A /* ViewController.swift */,
 				03A690FC217A7664000F476A /* Main.storyboard */,
@@ -85,11 +91,39 @@
 		03A6910D217A8404000F476A /* 3D Engine */ = {
 			isa = PBXGroup;
 			children = (
+				03A6910A217A7A76000F476A /* Shaders */,
+				03A69118217D1B4A000F476A /* Primitives */,
 				03A6910E217A8480000F476A /* Vertex.swift */,
 				03A69114217D0B21000F476A /* Node.swift */,
-				03A69116217D1451000F476A /* Triangle.swift */,
 			);
 			path = "3D Engine";
+			sourceTree = "<group>";
+		};
+		03A69118217D1B4A000F476A /* Primitives */ = {
+			isa = PBXGroup;
+			children = (
+				03A69116217D1451000F476A /* Triangle.swift */,
+				03A69119217D1B5D000F476A /* Cube.swift */,
+			);
+			path = Primitives;
+			sourceTree = "<group>";
+		};
+		03A6911B217D1D92000F476A /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				03A6911C217D1D97000F476A /* Matrix4 */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
+		03A6911C217D1D97000F476A /* Matrix4 */ = {
+			isa = PBXGroup;
+			children = (
+				03A6911E217D1DB3000F476A /* Matrix4.h */,
+				03A6911F217D1DB3000F476A /* Matrix4.m */,
+				03A6911D217D1DB2000F476A /* MetalDemo-Bridging-Header.h */,
+			);
+			path = Matrix4;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -124,6 +158,7 @@
 				TargetAttributes = {
 					03A690F4217A7664000F476A = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1000;
 					};
 				};
 			};
@@ -168,6 +203,8 @@
 				03A6910F217A8480000F476A /* Vertex.swift in Sources */,
 				03A69117217D1451000F476A /* Triangle.swift in Sources */,
 				03A690FB217A7664000F476A /* ViewController.swift in Sources */,
+				03A69120217D1DB3000F476A /* Matrix4.m in Sources */,
+				03A6911A217D1B5D000F476A /* Cube.swift in Sources */,
 				03A690F9217A7664000F476A /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -314,6 +351,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WJCKAVJR8J;
 				INFOPLIST_FILE = MetalDemo/Info.plist;
@@ -323,6 +361,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.firemark.MetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MetalDemo/Util/Matrix4/MetalDemo-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -332,6 +372,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WJCKAVJR8J;
 				INFOPLIST_FILE = MetalDemo/Info.plist;
@@ -341,6 +382,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.firemark.MetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MetalDemo/Util/Matrix4/MetalDemo-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
