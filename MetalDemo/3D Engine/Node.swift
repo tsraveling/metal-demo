@@ -16,6 +16,7 @@ class Node {
     let device: MTLDevice
     var vertexCount: Int
     var vertexBuffer: MTLBuffer
+    var time : CFTimeInterval = 0.0
     
     var positionX: Float = 0.0
     var positionY: Float = 0.0
@@ -43,6 +44,7 @@ class Node {
         self.device = device
         vertexCount = vertices.count
     }
+    
     func render(commandQueue: MTLCommandQueue, pipelineState: MTLRenderPipelineState, drawable: CAMetalDrawable, parentModelViewMatrix: Matrix4, projectionMatrix: Matrix4, clearColor: MTLClearColor?){
         
         // Build render pass descriptor
@@ -95,5 +97,9 @@ class Node {
         matrix.rotateAroundX(rotationX, y: rotationY, z: rotationZ)
         matrix.scale(scale, y: scale, z: scale)
         return matrix
+    }
+    
+    func updateWithDelta(delta: CFTimeInterval) {
+        self.time += delta
     }
 }

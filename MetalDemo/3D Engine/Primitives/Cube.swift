@@ -35,4 +35,15 @@ class Cube: Node {
         
         super.init(name: "Cube", vertices: verticesArray, device: device)
     }
+    
+    override func updateWithDelta(delta: CFTimeInterval) {
+        
+        // Update the base class
+        super.updateWithDelta(delta: delta)
+        
+        // Rotate the cube
+        let secsPerMove: Float = 6.0
+        rotationY = sinf( Float(time) * 2.0 * Float(Double.pi) / secsPerMove)
+        rotationX = sinf( Float(time) * 2.0 * Float(Double.pi) / secsPerMove)
+    }
 }

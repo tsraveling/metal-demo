@@ -22,6 +22,9 @@ class ViewController: UIViewController {
     var displayTimer     : CADisplayLink!
     var projectionMatrix : Matrix4!
     
+    // Timing for rotation
+    var lastFrameTimestamp : CFTimeInterval = 0.0
+    
     // MARK: - World content vars -
     
     var objectToDraw: Cube!
@@ -46,8 +49,28 @@ class ViewController: UIViewController {
         objectToDraw.render(commandQueue: commandQueue, pipelineState: pipelineState, drawable: drawable, parentModelViewMatrix: worldModelMatrix, projectionMatrix: projectionMatrix ,clearColor: nil)
     }
     
-    @objc func gameLoop() {
+    @objc func newFrame(displayLink: CADisplayLink){
         
+        // Initialize the timestamp if we need to
+        if self.lastFrameTimestamp == 0.0 {
+            self.lastFrameTimestamp = displayLink.timestamp
+        }
+        
+        // Get the delta from the timestamp
+        let delta: CFTimeInterval = displayLink.timestamp - lastFrameTimestamp
+        lastFrameTimestamp = displayLink.timestamp
+        
+        // Send the delta to the gameloop
+        self.gameLoop(delta)
+    }
+    
+    
+    @objc func gameLoop(_ delta: CFTimeInterval) {
+        
+        // Update the cube with the delta
+        self.objectToDraw.updateWithDelta(delta: delta)
+        
+        // Perform the render
         autoreleasepool {
             self.render()
         }
@@ -97,7 +120,7 @@ class ViewController: UIViewController {
         commandQueue = metalDevice.makeCommandQueue()
         
         // Finally, initialize the display timer
-        self.displayTimer = CADisplayLink(target: self, selector: #selector(ViewController.gameLoop))
+        self.displayTimer = CADisplayLink(target: self, selector: #selector(ViewController.newFrame(displayLink:)))
         self.displayTimer.add(to: .main, forMode: .default)
     }
 }
