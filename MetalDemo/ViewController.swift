@@ -24,9 +24,7 @@ class ViewController: UIViewController {
     
     // MARK: - World content vars -
     
-    let vertexData : [Float] = [0.0, 1.0, 0.0,
-                                -1.0, -1.0, 0.0,
-                                1.0, -1.0, 0.0]
+    var objectToDraw: Triangle!
     
     // MARK: - Actions -
     
@@ -41,30 +39,7 @@ class ViewController: UIViewController {
         }
         
         // Create the render pass descriptor
-        let renderPassDescriptor = MTLRenderPassDescriptor()
-        renderPassDescriptor.colorAttachments[0].texture = drawable.texture
-        renderPassDescriptor.colorAttachments[0].loadAction = .clear
-        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0.2, blue: 0.05, alpha: 1.0)
-        
-        // Set up the render command buffer
-        let commandBuffer = commandQueue.makeCommandBuffer()!
-        
-        // Set up the encoder we'll use to build render commands and attach it to the descriptor above
-        let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
-        
-        // Attach it to the pipeline state we built in viewDidLoad()
-        renderEncoder.setRenderPipelineState(self.pipelineState)
-        
-        // Feed it the vertices we initialized at the top of the class
-        renderEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
-        
-        // Draw the triangles described in vertexBuffer and finish encoding
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 1)
-        renderEncoder.endEncoding()
-        
-        // Finish the rendering process
-        commandBuffer.present(drawable)
-        commandBuffer.commit()
+        objectToDraw.render(commandQueue: commandQueue, pipelineState: pipelineState, drawable: drawable, clearColor: nil)
     }
     
     @objc func gameLoop() {
@@ -92,12 +67,8 @@ class ViewController: UIViewController {
         // Add the new Metal layer to the view's layer
         self.view.layer.addSublayer(self.metalLayer)
         
-        // Get the size of the data we'll be passing to the buffer (these floats being equal,
-        // we'll just multiply the number of vertices by the size of the first one)
-        let dataSize = self.vertexData.count * MemoryLayout.size(ofValue: self.vertexData[0])
-        
-        // Set up the buffer
-        vertexBuffer = self.metalDevice.makeBuffer(bytes: self.vertexData, length: dataSize, options: [])
+        // Build the triangle object
+        self.objectToDraw = Triangle(device: self.metalDevice)
         
         // Set up the renderer using a default library and the renderers we created in Shaders.metal
         let defaultLibrary = self.metalDevice.makeDefaultLibrary()!

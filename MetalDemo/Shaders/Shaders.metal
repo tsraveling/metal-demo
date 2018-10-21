@@ -9,18 +9,36 @@
 #include <metal_stdlib>
 using namespace metal;
 
+// Build structs for vertices
+struct VertexIn {
+    packed_float3 position;
+    packed_float4 color;
+};
+
+struct VertexOut {
+    float4 position [[position]];  //1
+    float4 color;
+};
+
 // This is our basic vertex shader -- it just returns the positions of the vertices.
-vertex float4 basic_vertex(const device packed_float3* vertex_array [[ buffer(0) ]],
+vertex VertexOut basic_vertex(const device VertexIn* vertexArray [[ buffer(0) ]],
                            unsigned int vid [[ vertex_id ]]) {
     
-    // For the basic shader, just return the position of the given vertex without any extra
-    // bells and whistles
-    return float4(vertex_array[vid], 1.0);
+    // Get the specific vertex out of the buffer
+    VertexIn vertexIn = vertexArray[vid];
+    
+    // Build the vertex out structure using the position and color passed in
+    VertexOut vertexOut;
+    vertexOut.position = float4(vertexIn.position,1);
+    vertexOut.color = vertexIn.color;
+    
+    // Return the result
+    return vertexOut;
 }
 
 // This is our basic fragment shader.
-fragment half4 basic_fragment() {
+fragment half4 basic_fragment(VertexOut interpolated [[stage_in]]) {
     
     // Just return white, basically rgba(1,1,1,1).
-    return half4(1.0);
+    return half4(interpolated.color[0], interpolated.color[1], interpolated.color[2], interpolated.color[3]);
 }
