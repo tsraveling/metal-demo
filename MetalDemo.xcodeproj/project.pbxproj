@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0319ACDC2181033F00FACDC5 /* MetalTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0319ACDB2181033F00FACDC5 /* MetalTexture.swift */; };
 		0319ACE02181117A00FACDC5 /* cube.png in Resources */ = {isa = PBXBuildFile; fileRef = 0319ACDF2181117A00FACDC5 /* cube.png */; };
+		0319ACE32181391600FACDC5 /* Light.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0319ACE22181391600FACDC5 /* Light.swift */; };
 		03A690F9217A7664000F476A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A690F8217A7664000F476A /* AppDelegate.swift */; };
 		03A690FB217A7664000F476A /* MetalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A690FA217A7664000F476A /* MetalViewController.swift */; };
 		03A690FE217A7664000F476A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03A690FC217A7664000F476A /* Main.storyboard */; };
@@ -26,6 +27,7 @@
 /* Begin PBXFileReference section */
 		0319ACDB2181033F00FACDC5 /* MetalTexture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalTexture.swift; sourceTree = "<group>"; };
 		0319ACDF2181117A00FACDC5 /* cube.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cube.png; sourceTree = "<group>"; };
+		0319ACE22181391600FACDC5 /* Light.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Light.swift; sourceTree = "<group>"; };
 		03A690F5217A7664000F476A /* MetalDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03A690F8217A7664000F476A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		03A690FA217A7664000F476A /* MetalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalViewController.swift; sourceTree = "<group>"; };
@@ -71,6 +73,14 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		0319ACE1218138F300FACDC5 /* Lighting */ = {
+			isa = PBXGroup;
+			children = (
+				0319ACE22181391600FACDC5 /* Light.swift */,
+			);
+			path = Lighting;
+			sourceTree = "<group>";
+		};
 		03A690EC217A7664000F476A = {
 			isa = PBXGroup;
 			children = (
@@ -91,7 +101,6 @@
 			isa = PBXGroup;
 			children = (
 				0319ACDE2181116400FACDC5 /* Resources */,
-				03A6911B217D1D92000F476A /* Util */,
 				03A6910D217A8404000F476A /* 3D Engine */,
 				03A690F8217A7664000F476A /* AppDelegate.swift */,
 				03A69124217E8E1D000F476A /* DemoViewController.swift */,
@@ -114,6 +123,8 @@
 		03A6910D217A8404000F476A /* 3D Engine */ = {
 			isa = PBXGroup;
 			children = (
+				03A6911B217D1D92000F476A /* 3rd Party */,
+				0319ACE1218138F300FACDC5 /* Lighting */,
 				03A6912E217FD213000F476A /* Memory Management */,
 				03A6912D217FD20F000F476A /* Building Blocks */,
 				03A6910A217A7A76000F476A /* Shaders */,
@@ -131,13 +142,13 @@
 			path = Primitives;
 			sourceTree = "<group>";
 		};
-		03A6911B217D1D92000F476A /* Util */ = {
+		03A6911B217D1D92000F476A /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
 				0319ACDD2181034000FACDC5 /* MetalTexture */,
 				03A6911C217D1D97000F476A /* Matrix4 */,
 			);
-			path = Util;
+			path = "3rd Party";
 			sourceTree = "<group>";
 		};
 		03A6911C217D1D97000F476A /* Matrix4 */ = {
@@ -243,6 +254,7 @@
 				0319ACDC2181033F00FACDC5 /* MetalTexture.swift in Sources */,
 				03A6910C217A7AAA000F476A /* Shaders.metal in Sources */,
 				03A69115217D0B21000F476A /* Node.swift in Sources */,
+				0319ACE32181391600FACDC5 /* Light.swift in Sources */,
 				03A6910F217A8480000F476A /* Vertex.swift in Sources */,
 				03A69125217E8E1D000F476A /* DemoViewController.swift in Sources */,
 				03A690FB217A7664000F476A /* MetalViewController.swift in Sources */,
@@ -405,7 +417,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.firemark.MetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "MetalDemo/Util/Matrix4/MetalDemo-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "MetalDemo/3D Engine/3rd Party/Matrix4/MetalDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -426,7 +438,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.firemark.MetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "MetalDemo/Util/Matrix4/MetalDemo-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "MetalDemo/3D Engine/3rd Party/Matrix4/MetalDemo-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

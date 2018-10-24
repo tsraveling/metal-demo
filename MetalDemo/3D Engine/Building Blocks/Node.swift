@@ -20,6 +20,7 @@ class Node {
     var vertexBuffer: MTLBuffer
     var time : CFTimeInterval = 0.0
     var bufferPool : BufferPool
+    let light = Light(color: (1.0, 1.0, 1.0), ambientIntensity: 0.2)
     
     // Texturing attributes
     
@@ -58,7 +59,8 @@ class Node {
         self.texture = texture
         
         // Build the buffer pool
-        self.bufferPool = BufferPool(device: device, poolSize: BufferPool.standardMatrixSize, bufferSize: BufferPool.standardMatrixSize * 2)
+        let uniformsBufferSize = (BufferPool.standardMatrixSize * 2) + Light.size()
+        self.bufferPool = BufferPool(device: device, poolSize: BufferPool.defaultSize, bufferSize: uniformsBufferSize)
     }
     
     func render(commandQueue: MTLCommandQueue, pipelineState: MTLRenderPipelineState, drawable: CAMetalDrawable, parentModelViewMatrix: Matrix4, projectionMatrix: Matrix4, clearColor: MTLClearColor?){
@@ -67,7 +69,7 @@ class Node {
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].texture = drawable.texture
         renderPassDescriptor.colorAttachments[0].loadAction = .clear
-        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.0, green: 104.0/255.0, blue: 5.0/255.0, alpha: 1.0)
+        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         renderPassDescriptor.colorAttachments[0].storeAction = .store
         
         // Get the command buffer
@@ -95,10 +97,11 @@ class Node {
         nodeModelMatrix.multiplyLeft(parentModelViewMatrix)
         
         // Get the uniform buffer from the buffer pool
-        let uniformBuffer = bufferPool.fetchNextBuffer(projectionMatrix: projectionMatrix, modelMatrix: nodeModelMatrix)
+        let uniformBuffer = bufferPool.fetchNextBuffer(projectionMatrix: projectionMatrix, modelMatrix: nodeModelMatrix, light: self.light)
         
         // Set the vertex buffer
         renderEncoder.setVertexBuffer(uniformBuffer, offset: 0, index: 1)
+        renderEncoder.setFragmentBuffer(uniformBuffer, offset: 0, index: 1)
         
         // Draw the node
         renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexCount, instanceCount: vertexCount/3)

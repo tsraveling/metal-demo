@@ -9,7 +9,13 @@
 #include <metal_stdlib>
 using namespace metal;
 
-// Build structs for vertices
+// Structs for worldspace entities
+struct Light {
+    packed_float3 color;
+    float ambientIntensity;
+};
+
+// Structs for vertices and uniforms
 struct VertexIn {
     packed_float3 position;
     packed_float4 color;
@@ -25,12 +31,13 @@ struct VertexOut {
 struct Uniforms {
     float4x4 modelMatrix;
     float4x4 projectionMatrix;
+    Light light;
 };
 
-// This is our basic vertex shader -- it just returns the positions of the vertices.
-vertex VertexOut basic_vertex(const device VertexIn* vertex_array [[ buffer(0) ]],
-                              const device Uniforms&  uniforms    [[ buffer(1) ]],
-                              unsigned int vid [[ vertex_id ]]) {
+// Basic vertex shader -- pass location, color, and texture data on so the fragment shader can use that information
+vertex VertexOut basic_vertex(const device VertexIn* vertex_array   [[ buffer(0) ]],
+                              const device Uniforms& uniforms       [[ buffer(1) ]],
+                              unsigned int vid                      [[ vertex_id ]]) {
     
     // Pull the matrix
     float4x4 modelMatrix = uniforms.modelMatrix;
@@ -52,11 +59,22 @@ vertex VertexOut basic_vertex(const device VertexIn* vertex_array [[ buffer(0) ]
     return vertexOut;
 }
 
-// This is our basic fragment shader.
-fragment float4 basic_fragment(VertexOut interpolated [[stage_in]],
-                              texture2d<float> tex2D [[ texture(0)]],
-                              sampler sampler2D      [[ sampler(0) ]] ) {
+// Basic fragment shader. Return a pixel color defined by a combination of color, texture, and light.
+fragment float4 basic_fragment(VertexOut interpolated           [[stage_in]],
+                               const device Uniforms& uniforms  [[ buffer(1) ]],
+                               texture2d<float> tex2D           [[ texture(0)]],
+                               sampler sampler2D                [[ sampler(0) ]] ) {
+    
+    // Get ambient light
+    Light light = uniforms.light;
+    float4 ambientColor = float4(light.color * light.ambientIntensity, 1);
+    
+    // Get vertex color
+    float4 vertexColor = interpolated.color;
+    
+    // Get texture color
+    float4 textureColor = tex2D.sample(sampler2D, interpolated.texCoord);
     
     // Return the interpolated part of the texture for the given vertex
-    return interpolated.color * tex2D.sample(sampler2D, interpolated.texCoord);
+    return ambientColor * vertexColor * textureColor;
 }

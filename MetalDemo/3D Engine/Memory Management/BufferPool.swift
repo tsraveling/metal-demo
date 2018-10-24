@@ -30,7 +30,7 @@ class BufferPool: NSObject {
         self.availabilitySemaphore.signal()
     }
     
-    func fetchNextBuffer(projectionMatrix : Matrix4, modelMatrix : Matrix4) -> MTLBuffer {
+    func fetchNextBuffer(projectionMatrix : Matrix4, modelMatrix : Matrix4, light: Light) -> MTLBuffer {
         
         // Get the next free buffer
         let buffer = self.uniformsBuffers[nextAvailableBufferIndex]
@@ -39,6 +39,7 @@ class BufferPool: NSObject {
         // Copy in the transforms
         memcpy(bufferPointer, modelMatrix.raw(), BufferPool.standardMatrixSize)
         memcpy(bufferPointer + BufferPool.standardMatrixSize, projectionMatrix.raw(), BufferPool.standardMatrixSize)
+        memcpy(bufferPointer + (BufferPool.standardMatrixSize * 2), light.raw(), Light.size())
         
         // Advance the next buffer index
         self.nextAvailableBufferIndex += 1
