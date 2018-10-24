@@ -13,11 +13,13 @@ using namespace metal;
 struct VertexIn {
     packed_float3 position;
     packed_float4 color;
+    packed_float2 texCoord;
 };
 
 struct VertexOut {
     float4 position [[position]];
     float4 color;
+    float2 texCoord;
 };
 
 struct Uniforms {
@@ -44,14 +46,17 @@ vertex VertexOut basic_vertex(const device VertexIn* vertex_array [[ buffer(0) ]
     // order of multiplication makes a big difference.
     vertexOut.position = projectionMatrix * modelMatrix * float4(vertexIn.position,1);
     vertexOut.color = vertexIn.color;
+    vertexOut.texCoord = vertexIn.texCoord;
     
     // Return the result
     return vertexOut;
 }
 
 // This is our basic fragment shader.
-fragment half4 basic_fragment(VertexOut interpolated [[stage_in]]) {
+fragment float4 basic_fragment(VertexOut interpolated [[stage_in]],
+                              texture2d<float> tex2D [[ texture(0)]],
+                              sampler sampler2D      [[ sampler(0) ]] ) {
     
-    // Just return white, basically rgba(1,1,1,1).
-    return half4(interpolated.color[0], interpolated.color[1], interpolated.color[2], interpolated.color[3]);
+    // Return the interpolated part of the texture for the given vertex
+    return interpolated.color * tex2D.sample(sampler2D, interpolated.texCoord);
 }

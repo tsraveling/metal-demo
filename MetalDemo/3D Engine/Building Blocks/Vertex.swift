@@ -16,8 +16,11 @@ struct Vertex {
     // Color
     var r,g,b,a : Float
     
+    // Texture
+    var s,t     : Float
+    
     // Build a buffer from the data here
     func floatBuffer() -> [Float] {
-        return [x,y,z,r,g,b,a];
+        return [x,y,z,r,g,b,a,s,t];
     }
 }

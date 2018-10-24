@@ -12,12 +12,21 @@ import QuartzCore
 
 class Node {
     
+    // Meta and render attributes
+    
     let name: String
     let device: MTLDevice
     var vertexCount: Int
     var vertexBuffer: MTLBuffer
     var time : CFTimeInterval = 0.0
     var bufferPool : BufferPool
+    
+    // Texturing attributes
+    
+    var texture : MTLTexture
+    lazy var samplerState : MTLSamplerState? = Node.defaultSampler(device: self.device)
+    
+    // Transform attributes
     
     var positionX: Float = 0.0
     var positionY: Float = 0.0
@@ -28,7 +37,7 @@ class Node {
     var rotationZ: Float = 0.0
     var scale: Float     = 1.0
     
-    init(name: String, vertices: Array<Vertex>, device: MTLDevice){
+    init(name: String, vertices: Array<Vertex>, device: MTLDevice, texture: MTLTexture){
         
         // Build the data from the vertex argument
         var vertexData = Array<Float>()
@@ -44,6 +53,9 @@ class Node {
         self.name = name
         self.device = device
         vertexCount = vertices.count
+        
+        // Add the texture
+        self.texture = texture
         
         // Build the buffer pool
         self.bufferPool = BufferPool(device: device, poolSize: BufferPool.standardMatrixSize, bufferSize: BufferPool.standardMatrixSize * 2)
@@ -71,6 +83,12 @@ class Node {
         renderEncoder.setCullMode(MTLCullMode.front)
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        
+        // Attach the texture
+        renderEncoder.setFragmentTexture(self.texture, index: 0)
+        if let samplerState = self.samplerState {
+            renderEncoder.setFragmentSamplerState(samplerState, index: 0)
+        }
         
         // Build transformation matrix
         let nodeModelMatrix = self.modelMatrix()
@@ -103,5 +121,32 @@ class Node {
     
     func updateWithDelta(delta: CFTimeInterval) {
         self.time += delta
+    }
+    
+    class func defaultSampler(device: MTLDevice) -> MTLSamplerState {
+        
+        let sampler = MTLSamplerDescriptor()
+        
+        // Use nearest-neighbor filtering for efficiency reasons
+        sampler.minFilter             = MTLSamplerMinMagFilter.nearest
+        sampler.magFilter             = MTLSamplerMinMagFilter.nearest
+        sampler.mipFilter             = MTLSamplerMipFilter.nearest
+        
+        // Limit anistropic sampling to one
+        sampler.maxAnisotropy         = 1
+        
+        // Use clamp-to-edge in case we accidentally use a texture that's too small
+        sampler.sAddressMode          = MTLSamplerAddressMode.clampToEdge
+        sampler.tAddressMode          = MTLSamplerAddressMode.clampToEdge
+        sampler.rAddressMode          = MTLSamplerAddressMode.clampToEdge
+        
+        // Used normalized instead of pixel coordinates
+        sampler.normalizedCoordinates = true
+        
+        // Set clamp to the full range
+        sampler.lodMinClamp           = 0
+        sampler.lodMaxClamp           = .greatestFiniteMagnitude
+        
+        return device.makeSamplerState(descriptor: sampler)!
     }
 }

@@ -79,6 +79,10 @@ class MetalViewController: UIViewController {
     }
     
     // MARK: - VC Functions -
+    
+    func updateProjectionMatrix() {
+        self.projectionMatrix = Matrix4.makePerspectiveViewAngle(Matrix4.degrees(toRad: 85.0), aspectRatio: Float(self.view.bounds.size.width / self.view.bounds.size.height), nearZ: 0.01, farZ: 100.0)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,14 +91,13 @@ class MetalViewController: UIViewController {
         self.metalDevice = MTLCreateSystemDefaultDevice()
         
         // Set up the projection matrix
-        self.projectionMatrix = Matrix4.makePerspectiveViewAngle(Matrix4.degrees(toRad: 85.0), aspectRatio: Float(self.view.bounds.size.width / self.view.bounds.size.height), nearZ: 0.01, farZ: 100.0)
+        self.updateProjectionMatrix()
         
         // Now, construct the Metal layer
         self.metalLayer = CAMetalLayer()
         self.metalLayer.device = metalDevice
         self.metalLayer.pixelFormat = .bgra8Unorm
         self.metalLayer.framebufferOnly = true
-        self.metalLayer.frame = self.view.layer.frame
         
         // Add the new Metal layer to the view's layer
         self.view.layer.addSublayer(self.metalLayer)
@@ -121,6 +124,28 @@ class MetalViewController: UIViewController {
         // Finally, initialize the display timer
         self.displayTimer = CADisplayLink(target: self, selector: #selector(self.newFrame(displayLink:)))
         self.displayTimer.add(to: .main, forMode: .default)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // Adjust the Metal layer if the view autorotates or otherwise changes frame
+        if let window = view.window {
+            
+            // Get the new size and scale (Retina or Retina+) of the view
+            let layerSize = view.bounds.size
+            let scale = window.screen.nativeScale
+            
+            // Account for Retina
+            view.contentScaleFactor = scale
+            
+            // Update Metal with the new values
+            metalLayer.frame = CGRect(x: 0, y: 0, width: layerSize.width, height: layerSize.height)
+            metalLayer.drawableSize = CGSize(width: layerSize.width * scale, height: layerSize.height * scale)
+        }
+        
+        // Update the projection matrix
+        self.updateProjectionMatrix()
     }
 }
 
