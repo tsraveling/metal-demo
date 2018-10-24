@@ -11,7 +11,7 @@ import UIKit
 import Metal
 import MetalKit
 
-class ViewController: UIViewController {
+class MetalViewController: UIViewController {
     
     // MARK: - Outlets and class vars -
     
@@ -23,33 +23,35 @@ class ViewController: UIViewController {
     var projectionMatrix : Matrix4!
     
     // Timing for rotation
-    var lastFrameTimestamp : CFTimeInterval = 0.0
-    
-    // MARK: - World content vars -
-    
-    var objectToDraw: Cube!
+    fileprivate var lastFrameTimestamp : CFTimeInterval = 0.0
     
     // MARK: - Actions -
     
     
+    // MARK: - Overrideable functions -
+    
+    func render(_ drawable : CAMetalDrawable) {
+        
+    }
+    
+    func gameLoop(_ delta: CFTimeInterval) {
+        
+    }
+    
     // MARK: - Game Loop and Rendering -
     
-    func render() {
+    fileprivate func baseRender() {
         
         // Make sure we have a drawable surface
         guard let drawable = self.metalLayer?.nextDrawable() else {
             return
         }
         
-        // Create the render pass descriptor
-        let worldModelMatrix = Matrix4()
-        worldModelMatrix.translate(0.0, y: 0.0, z: -7.0)
-        worldModelMatrix.rotateAroundX(Matrix4.degrees(toRad: 25), y: 0.0, z: 0.0)
-        
-        objectToDraw.render(commandQueue: commandQueue, pipelineState: pipelineState, drawable: drawable, parentModelViewMatrix: worldModelMatrix, projectionMatrix: projectionMatrix ,clearColor: nil)
+        // Perform the overrideabble function
+        self.render(drawable)
     }
     
-    @objc func newFrame(displayLink: CADisplayLink){
+    @objc fileprivate func newFrame(displayLink: CADisplayLink){
         
         // Initialize the timestamp if we need to
         if self.lastFrameTimestamp == 0.0 {
@@ -61,18 +63,18 @@ class ViewController: UIViewController {
         lastFrameTimestamp = displayLink.timestamp
         
         // Send the delta to the gameloop
-        self.gameLoop(delta)
+        self.baseGameLoop(delta)
     }
     
     
-    @objc func gameLoop(_ delta: CFTimeInterval) {
+    @objc fileprivate func baseGameLoop(_ delta: CFTimeInterval) {
         
-        // Update the cube with the delta
-        self.objectToDraw.updateWithDelta(delta: delta)
+        // Perform the overrideable function
+        self.gameLoop(delta)
         
         // Perform the render
         autoreleasepool {
-            self.render()
+            self.baseRender()
         }
     }
     
@@ -97,9 +99,6 @@ class ViewController: UIViewController {
         // Add the new Metal layer to the view's layer
         self.view.layer.addSublayer(self.metalLayer)
         
-        // Build the triangle object
-        self.objectToDraw = Cube(device: self.metalDevice)
-        
         // Set up the renderer using a default library and the renderers we created in Shaders.metal
         let defaultLibrary = self.metalDevice.makeDefaultLibrary()!
         let fragmentProgram = defaultLibrary.makeFunction(name: "basic_fragment")
@@ -120,7 +119,7 @@ class ViewController: UIViewController {
         commandQueue = metalDevice.makeCommandQueue()
         
         // Finally, initialize the display timer
-        self.displayTimer = CADisplayLink(target: self, selector: #selector(ViewController.newFrame(displayLink:)))
+        self.displayTimer = CADisplayLink(target: self, selector: #selector(self.newFrame(displayLink:)))
         self.displayTimer.add(to: .main, forMode: .default)
     }
 }

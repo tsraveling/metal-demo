@@ -17,6 +17,7 @@ class Node {
     var vertexCount: Int
     var vertexBuffer: MTLBuffer
     var time : CFTimeInterval = 0.0
+    var bufferPool : BufferPool
     
     var positionX: Float = 0.0
     var positionY: Float = 0.0
@@ -39,10 +40,13 @@ class Node {
         let dataSize = vertexData.count * MemoryLayout.size(ofValue: vertexData[0])
         self.vertexBuffer = device.makeBuffer(bytes: vertexData, length: dataSize, options: [])!
         
-        // Finally, name the node and finish initializing the data
+        // Name the node and finish initializing the data
         self.name = name
         self.device = device
         vertexCount = vertices.count
+        
+        // Build the buffer pool
+        self.bufferPool = BufferPool(device: device, poolSize: BufferPool.standardMatrixSize, bufferSize: BufferPool.standardMatrixSize * 2)
     }
     
     func render(commandQueue: MTLCommandQueue, pipelineState: MTLRenderPipelineState, drawable: CAMetalDrawable, parentModelViewMatrix: Matrix4, projectionMatrix: Matrix4, clearColor: MTLClearColor?){
@@ -67,15 +71,8 @@ class Node {
         let nodeModelMatrix = self.modelMatrix()
         nodeModelMatrix.multiplyLeft(parentModelViewMatrix)
         
-        // Build the uniform buffer using the Matrix4 construction
-        let uniformBuffer = device.makeBuffer(length: MemoryLayout<Float>.size * Matrix4.numberOfElements() * 2, options: [])!
-        
-        // Set up the pointer to the buffer
-        let bufferPointer = uniformBuffer.contents()
-        
-        // Copy in world and perspective transforms
-        memcpy(bufferPointer, nodeModelMatrix.raw(), MemoryLayout<Float>.size * Matrix4.numberOfElements())
-        memcpy(bufferPointer + MemoryLayout<Float>.size * Matrix4.numberOfElements(), projectionMatrix.raw(), MemoryLayout<Float>.size * Matrix4.numberOfElements())
+        // Get the uniform buffer from the buffer pool
+        let uniformBuffer = bufferPool.fetchNextBuffer(projectionMatrix: projectionMatrix, modelMatrix: nodeModelMatrix)
         
         // Set the vertex buffer
         renderEncoder.setVertexBuffer(uniformBuffer, offset: 0, index: 1)

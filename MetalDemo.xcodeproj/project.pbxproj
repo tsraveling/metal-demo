@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03A690F9217A7664000F476A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A690F8217A7664000F476A /* AppDelegate.swift */; };
-		03A690FB217A7664000F476A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A690FA217A7664000F476A /* ViewController.swift */; };
+		03A690FB217A7664000F476A /* MetalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A690FA217A7664000F476A /* MetalViewController.swift */; };
 		03A690FE217A7664000F476A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03A690FC217A7664000F476A /* Main.storyboard */; };
 		03A69100217A7665000F476A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03A690FF217A7665000F476A /* Assets.xcassets */; };
 		03A69103217A7665000F476A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03A69101217A7665000F476A /* LaunchScreen.storyboard */; };
@@ -18,12 +18,14 @@
 		03A69117217D1451000F476A /* Triangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A69116217D1451000F476A /* Triangle.swift */; };
 		03A6911A217D1B5D000F476A /* Cube.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A69119217D1B5D000F476A /* Cube.swift */; };
 		03A69120217D1DB3000F476A /* Matrix4.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A6911F217D1DB3000F476A /* Matrix4.m */; settings = {COMPILER_FLAGS = "-ObjC"; }; };
+		03A69125217E8E1D000F476A /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A69124217E8E1D000F476A /* DemoViewController.swift */; };
+		03A6912C217FD203000F476A /* BufferPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A6912B217FD203000F476A /* BufferPool.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		03A690F5217A7664000F476A /* MetalDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03A690F8217A7664000F476A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		03A690FA217A7664000F476A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		03A690FA217A7664000F476A /* MetalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalViewController.swift; sourceTree = "<group>"; };
 		03A690FD217A7664000F476A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		03A690FF217A7665000F476A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		03A69102217A7665000F476A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -36,6 +38,8 @@
 		03A6911D217D1DB2000F476A /* MetalDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MetalDemo-Bridging-Header.h"; sourceTree = "<group>"; };
 		03A6911E217D1DB3000F476A /* Matrix4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix4.h; sourceTree = "<group>"; };
 		03A6911F217D1DB3000F476A /* Matrix4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Matrix4.m; sourceTree = "<group>"; };
+		03A69124217E8E1D000F476A /* DemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewController.swift; sourceTree = "<group>"; };
+		03A6912B217FD203000F476A /* BufferPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferPool.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,7 +75,7 @@
 				03A6911B217D1D92000F476A /* Util */,
 				03A6910D217A8404000F476A /* 3D Engine */,
 				03A690F8217A7664000F476A /* AppDelegate.swift */,
-				03A690FA217A7664000F476A /* ViewController.swift */,
+				03A69124217E8E1D000F476A /* DemoViewController.swift */,
 				03A690FC217A7664000F476A /* Main.storyboard */,
 				03A690FF217A7665000F476A /* Assets.xcassets */,
 				03A69101217A7665000F476A /* LaunchScreen.storyboard */,
@@ -91,10 +95,11 @@
 		03A6910D217A8404000F476A /* 3D Engine */ = {
 			isa = PBXGroup;
 			children = (
+				03A6912E217FD213000F476A /* Memory Management */,
+				03A6912D217FD20F000F476A /* Building Blocks */,
 				03A6910A217A7A76000F476A /* Shaders */,
 				03A69118217D1B4A000F476A /* Primitives */,
-				03A6910E217A8480000F476A /* Vertex.swift */,
-				03A69114217D0B21000F476A /* Node.swift */,
+				03A690FA217A7664000F476A /* MetalViewController.swift */,
 			);
 			path = "3D Engine";
 			sourceTree = "<group>";
@@ -102,8 +107,8 @@
 		03A69118217D1B4A000F476A /* Primitives */ = {
 			isa = PBXGroup;
 			children = (
-				03A69116217D1451000F476A /* Triangle.swift */,
 				03A69119217D1B5D000F476A /* Cube.swift */,
+				03A69116217D1451000F476A /* Triangle.swift */,
 			);
 			path = Primitives;
 			sourceTree = "<group>";
@@ -124,6 +129,23 @@
 				03A6911D217D1DB2000F476A /* MetalDemo-Bridging-Header.h */,
 			);
 			path = Matrix4;
+			sourceTree = "<group>";
+		};
+		03A6912D217FD20F000F476A /* Building Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				03A69114217D0B21000F476A /* Node.swift */,
+				03A6910E217A8480000F476A /* Vertex.swift */,
+			);
+			path = "Building Blocks";
+			sourceTree = "<group>";
+		};
+		03A6912E217FD213000F476A /* Memory Management */ = {
+			isa = PBXGroup;
+			children = (
+				03A6912B217FD203000F476A /* BufferPool.swift */,
+			);
+			path = "Memory Management";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,9 +223,11 @@
 				03A6910C217A7AAA000F476A /* Shaders.metal in Sources */,
 				03A69115217D0B21000F476A /* Node.swift in Sources */,
 				03A6910F217A8480000F476A /* Vertex.swift in Sources */,
+				03A69125217E8E1D000F476A /* DemoViewController.swift in Sources */,
 				03A69117217D1451000F476A /* Triangle.swift in Sources */,
-				03A690FB217A7664000F476A /* ViewController.swift in Sources */,
+				03A690FB217A7664000F476A /* MetalViewController.swift in Sources */,
 				03A69120217D1DB3000F476A /* Matrix4.m in Sources */,
+				03A6912C217FD203000F476A /* BufferPool.swift in Sources */,
 				03A6911A217D1B5D000F476A /* Cube.swift in Sources */,
 				03A690F9217A7664000F476A /* AppDelegate.swift in Sources */,
 			);
