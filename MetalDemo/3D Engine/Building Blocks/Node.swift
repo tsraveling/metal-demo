@@ -61,6 +61,11 @@ class Node {
         // Get the command buffer
         let commandBuffer = commandQueue.makeCommandBuffer()!
         
+        // Notify bufferPool's sempahore on completion of task
+        commandBuffer.addCompletedHandler { _ in
+            self.bufferPool.greenlightSemaphore()
+        }
+        
         // Set up the encoder for this node
         let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
         renderEncoder.setCullMode(MTLCullMode.front)

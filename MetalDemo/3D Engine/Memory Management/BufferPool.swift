@@ -17,8 +17,18 @@ class BufferPool: NSObject {
    
     // Vars defining how this pool operates
     let poolSize : Int
+    
     fileprivate var uniformsBuffers: [MTLBuffer] = []
     fileprivate var nextAvailableBufferIndex = 0
+    fileprivate var availabilitySemaphore : DispatchSemaphore
+    
+    func waitForSemaphore() {
+        _ = self.availabilitySemaphore.wait(timeout: .distantFuture)
+    }
+    
+    func greenlightSemaphore() {
+        self.availabilitySemaphore.signal()
+    }
     
     func fetchNextBuffer(projectionMatrix : Matrix4, modelMatrix : Matrix4) -> MTLBuffer {
         
@@ -42,6 +52,9 @@ class BufferPool: NSObject {
     
     init(device: MTLDevice, poolSize: Int, bufferSize: Int) {
         
+        // Set up the semaphore
+        self.availabilitySemaphore = DispatchSemaphore(value: poolSize)
+        
         // Set the size of the pool
         self.poolSize = poolSize
         for _ in 0 ..< poolSize {
@@ -49,6 +62,14 @@ class BufferPool: NSObject {
             // Build the individual buffers
             let buffer = device.makeBuffer(length: bufferSize, options: [])!
             self.uniformsBuffers.append(buffer)
+        }
+    }
+    
+    deinit {
+        
+        // As we clear this object, clear up the semaphores we're using
+        for _ in 0 ..< self.poolSize {
+            self.availabilitySemaphore.signal()
         }
     }
 }
