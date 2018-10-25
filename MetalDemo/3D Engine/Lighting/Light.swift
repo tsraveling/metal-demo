@@ -10,14 +10,18 @@ import Foundation
 
 struct Light {
     
-    var color: (Float, Float, Float)
-    var ambientIntensity: Float
+    var color               : (Float, Float, Float)
+    var direction           : (Float, Float, Float)
+    var ambientIntensity    : Float
+    var diffuseIntensity    : Float
+    var shininess           : Float
+    var specularIntensity   : Float
     
     static func size() -> Int {
-        return MemoryLayout<Float>.size * 4
+        return MemoryLayout<Float>.size * 12
     }
     
     func raw() -> [Float] {
-        return [self.color.0, self.color.1, self.color.2, self.ambientIntensity]
+        return [self.color.0, self.color.1, self.color.2, self.ambientIntensity, direction.0, direction.1, direction.2, diffuseIntensity, shininess, specularIntensity]
     }
 }

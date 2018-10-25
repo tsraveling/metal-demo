@@ -11,16 +11,19 @@ import Foundation
 struct Vertex {
     
     // Position
-    var x,y,z   : Float
+    var x, y, z     : Float
     
     // Color
-    var r,g,b,a : Float
+    var r, g, b, a  : Float
     
     // Texture
-    var s,t     : Float
+    var s, t        : Float
+    
+    // Normals
+    var nX, nY, nZ  : Float
     
     // Build a buffer from the data here
     func floatBuffer() -> [Float] {
-        return [x,y,z,r,g,b,a,s,t];
+        return [x,y,z,r,g,b,a,s,t,nX,nY,nZ];
     }
 }

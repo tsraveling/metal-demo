@@ -20,7 +20,7 @@ class Node {
     var vertexBuffer: MTLBuffer
     var time : CFTimeInterval = 0.0
     var bufferPool : BufferPool
-    let light = Light(color: (1.0, 1.0, 1.0), ambientIntensity: 0.2)
+    let light = Light(color: (1.0, 1.0, 1.0), direction: (0.0, 0.0, 1.0), ambientIntensity: 0.1, diffuseIntensity: 0.8, shininess: 1, specularIntensity: 0.5)
     
     // Texturing attributes
     
